@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>반응속도 테스트</title>
+    <style>
+      * {
+        padding: 0px;
+      }
+      body {
+        margin: 0px;
+      }
+
+      .nav-container {
+        list-style: none;
+        display: inline-block;
+      }
+
+      .nav-item a {
+        text-decoration: none;
+        color: black;
+        font-weight: 900;
+        cursor: pointer;
+        padding: 15px 12px;
+        font-size: large;
+      }
+      .nav-item {
+        display: inline;
+      }
+      /*왜 .nav-container에 display=inline이면 안되고 li에 할당해야하지?*/
+      .test {
+        position: relative;
+        left: 200px;
+      }
+      .login {
+        position: relative;
+        left: 1100px;
+      }
+      .signup {
+        position: relative;
+        left: 880px;
+      }
+      #screen {
+        height: 400px;
+        text-align: center;
+        min-height: 100%;
+
+        user-select: none;
+      }
+      .waiting {
+        background-color: darkgoldenrod;
+        font-size: xx-large;
+        font-weight: 900;
+      }
+      .ready {
+        background-color: rgb(190, 54, 54);
+        color: white;
+      }
+      .now {
+        background-color: dodgerblue;
+      }
+    </style>
+  </head>
+
+  <body>
+    <ul class="nav-container">
+      <li class="nav-item test"><a href="#">다른 테스트</a></li>
+      <li class="nav-item login"><a href="#">LOG IN</a></li>
+      <li class="nav-item signup"><a href="#">SIGH UP</a></li>
+    </ul>
+
+    <div id="screen" class="waiting">클릭해서 시작하세요</div>
+    <div id="result"></div>
+  </body>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const screen = document.querySelector('#screen');
+      const result = document.querySelector('#result');
+
+      let startTime; // 시작시간
+      let endTime; // 끝나는 시간
+      let responseTime; // 측정시간
+      let records = []; // 평균 반응 속도 구할 빈 배열
+      let timeoutId; // setTimeout 함수를 담을 변수
+
+      screen.addEventListener('click', () => {
+        if (screen.classList.contains('waiting')) {
+          screen.classList.replace('waiting', 'ready');
+          screen.textContent = '초록색이 되면 클릭하세요';
+          timeoutId = setTimeout(() => {
+            startTime = new Date();
+            screen.classList.replace('ready', 'now');
+            screen.textContent = '클릭 하세요!';
+          }, Math.floor(Math.random() * 1000) + 2000);
+        } else if (screen.classList.contains('ready')) {
+          clearTimeout(timeoutId);
+          screen.textContent = '다시 시도하세요';
+          screen.classList.replace('ready', 'waiting');
+        } else if (screen.classList.contains('now')) {
+          endTime = new Date();
+          responseTime = endTime - startTime; // 측정시간
+          records.push(responseTime);
+          let Avg =
+            records.reduce((acc, cur) => {
+              return acc + cur;
+            }, 0) / records.length; // 평균 반응 속도
+          result.textContent =
+            '현재 : ' + responseTime + ' ms' + ' ' + '평균 속도 : ' + Avg;
+
+          screen.classList.replace('now', 'waiting');
+          screen.textContent = '클릭해서 시작하세요';
+        }
+      });
+    });
+  </script>
+</html>
